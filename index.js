@@ -82,9 +82,9 @@ function onResults(results) {
                             countDownNumber = COUNTDOWN_OFFSET;
                             canvasCountDownCtx.clearRect(0, 0, canvasCountDownCtx.canvas.width, canvasCountDownCtx.canvas.height);
 
-                            var dataURL = canvasCtx.canvas.toDataURL("image/png");
-                            var newTab = window.open('about:blank', 'image from canvas');
-                            newTab.document.write("<img src='" + dataURL + "' alt='from canvas'/>");
+                            // var dataURL = canvasCtx.canvas.toDataURL("image/png");
+                            // var newTab = window.open('about:blank', 'image from canvas');
+                            // newTab.document.write("<img src='" + dataURL + "' alt='from canvas'/>");
 
                             return;
                         }
@@ -104,13 +104,13 @@ function onResults(results) {
         window.palmDetectedStartTime = null;
     }
 
-    if (results.multiHandedness && results.multiHandedness.length > 0) {
-        let multiHandedness = results.multiHandedness[0];
-        // console.log(multiHandedness.label);
-        canvasCtx.font = '50px serif';
-        var width = canvasCtx.measureText(multiHandedness.label);
-        canvasCtx.fillText(multiHandedness.label, 100, 100);
-    }
+    // if (results.multiHandedness && results.multiHandedness.length > 0) {
+    //     let multiHandedness = results.multiHandedness[0];
+    //     // console.log(multiHandedness.label);
+    //     canvasCtx.font = '50px serif';
+    //     var width = canvasCtx.measureText(multiHandedness.label);
+    //     canvasCtx.fillText(multiHandedness.label, 100, 100);
+    // }
 
     canvasCtx.restore();
 }
@@ -132,10 +132,16 @@ const camera = new Camera(videoElement, {
     onFrame: async () => {
         await hands.send({ image: videoElement });
     },
-    width: 1280,
-    height: 720,
+    // width: 1280,
+    // height: 720,
     facingMode: 'user'
 });
 camera.start();
 
 
+window.addEventListener('DOMContentLoaded', (event) => {
+    canvasCtx.canvas.width = window.innerWidth;
+    canvasCtx.canvas.height = window.innerHeight;
+    canvasCountDownCtx.canvas.width = window.innerWidth;
+    canvasCountDownCtx.canvas.height = window.innerHeight;
+});
