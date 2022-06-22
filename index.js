@@ -17,6 +17,8 @@ videoElement.style.bottom = 0;
 videoElement.style.left = 0;
 videoElement.style.right = 0;
 videoElement.style.visibility = 'hidden';
+videoElement.autoplay = true;
+videoElement.playsInline = true;
 document.body.appendChild(videoElement);
 
 const canvasElement = document.getElementById('output_canvas');
