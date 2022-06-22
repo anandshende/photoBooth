@@ -1,11 +1,16 @@
 import { calculations } from './test.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-app.js";
+import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-storage.js";
 
 
 
 const COUNTDOWN_OFFSET = 6;
 
 
-
+const firebaseConfig = {
+    storageBucket: 'gs://photobooth-870b7.appspot.com'
+};
+const app = initializeApp(firebaseConfig);
 
 
 // const videoElement = document.getElementsByClassName('input_video')[0];
@@ -21,12 +26,16 @@ videoElement.autoplay = true;
 videoElement.playsInline = true;
 document.body.appendChild(videoElement);
 
+const closeButton = document.getElementById('close');
+const qrContainer = document.getElementById('qr-container');
+const qrCode = document.getElementById('qrcode');
 const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 
 const canvasCountDownElement = document.getElementById('countdown');
 const canvasCountDownCtx = canvasCountDownElement.getContext('2d');
 
+let countDownNumber = COUNTDOWN_OFFSET;
 window.palmDetectedStartTime = null;
 
 function drawImageScaled(img, ctx) {
@@ -57,6 +66,7 @@ function onResults(results) {
         drawLandmarks(canvasCtx, landmarks, { color: '#FF0000', lineWidth: 2 });
         let bool = calculations(landmarks, canvasCtx);
         if (bool) {
+
             if (!window.palmDetectedStartTime) {
                 window.palmDetectedStartTime = new Date();
             } else {
@@ -64,8 +74,6 @@ function onResults(results) {
                 let diffTime = Math.abs(currentTime - window.palmDetectedStartTime);
                 if (diffTime >= 2000) {
                     window.palmDetectedStartTime = null;
-
-                    let countDownNumber = COUNTDOWN_OFFSET;
 
                     let countdown = setInterval(() => {
                         countDownNumber--;
@@ -85,6 +93,31 @@ function onResults(results) {
                             // var dataURL = canvasCtx.canvas.toDataURL("image/png");
                             // var newTab = window.open('about:blank', 'image from canvas');
                             // newTab.document.write("<img src='" + dataURL + "' alt='from canvas'/>");
+
+                            const storage = getStorage(app);
+                            const randomNum = Math.floor(Math.random() * Math.pow(10, 10));
+                            const storageRef = ref(storage, randomNum + '.png');
+                            // const message4 = 'data:text/plain;base64,5b6p5Y+344GX44G+44GX44Gf77yB44GK44KB44Gn44Go44GG77yB';
+                            const message4 = canvasCtx.canvas.toDataURL("image/png");
+                            uploadString(storageRef, message4, 'data_url').then((snapshot) => {
+                                // console.log(snapshot);
+                                // console.log(storageRef);
+                                getDownloadURL(storageRef)
+                                    .then((url) => {
+                                        console.log(url);
+
+                                        const qrcode = new QRCode(document.getElementById('qrcode'), {
+                                            text: url,
+                                            width: 200,
+                                            height: 200,
+                                            colorDark: '#000',
+                                            colorLight: '#fff',
+                                            correctLevel: QRCode.CorrectLevel.H
+                                        });
+
+                                        qrContainer.style.visibility = 'visible';
+                                    })
+                            });
 
                             return;
                         }
@@ -145,3 +178,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
     canvasCountDownCtx.canvas.width = window.innerWidth;
     canvasCountDownCtx.canvas.height = window.innerHeight;
 });
+
+closeButton.onclick = function () {
+    qrContainer.style.visibility = 'hidden';
+    qrcode.innerHTML = '';
+};
