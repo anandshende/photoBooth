@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./popup.css">
 
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 
@@ -17,6 +18,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
 
+    <script src="./popup.js" type="module"></script>
     <script src="./test.js" type="module"></script>
     <script src="./index.js" type="module"></script>
 </head>
@@ -30,9 +32,24 @@
         <canvas id="output_canvas"></canvas>
         <canvas class="output_canvas" id="countdown"></canvas>
 
-        <div id="qr-container">
+        <div id="qr-container" class="qr-container">
             <div id="image-preview"></div>
             <div id="qrcode"></div>
+        </div>
+
+        <div id="config-form" class="qr-container form-container">
+            <h1>Config</h1>
+
+            <label for="email"><b>CONTINUOUS_RECOGNITION_TIMEOUT</b></label>
+            <input type="text" id="text-continuous" placeholder="2" required>
+
+            <label for="email"><b>COUNTDOWN_OFFSET</b></label>
+            <input type="text" id="text-offset" placeholder="5" required>
+
+            <label for="email"><b>QR_DISPLAY_TIMEOUT</b></label>
+            <input type="text" id="text-qr-timeout" placeholder="20" required>
+
+            <button type="button" class="btn" onclick="submitForm()">Submit</button>
         </div>
 
     </div>

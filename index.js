@@ -8,12 +8,13 @@ localStorage.setItem('DEV', window.DEV);
 import { calculations } from './test.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-app.js";
 import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-storage.js";
+import { PopUp } from './popup.js';
 
 
 
-const CONTINUOUS_RECOGNITION_TIMEOUT = 2;
-const COUNTDOWN_OFFSET = 5;
-const QR_DISPLAY_TIMEOUT = 20;
+window.CONTINUOUS_RECOGNITION_TIMEOUT = 2;
+window.COUNTDOWN_OFFSET = 5;
+window.QR_DISPLAY_TIMEOUT = 20;
 
 
 
@@ -45,7 +46,7 @@ const canvasCtx = canvasElement.getContext('2d');
 const canvasCountDownElement = document.getElementById('countdown');
 const canvasCountDownCtx = canvasCountDownElement.getContext('2d');
 
-let countDownNumber = COUNTDOWN_OFFSET + 1;
+let countDownNumber = window.COUNTDOWN_OFFSET + 1;
 window.palmDetectedStartTime = null;
 window.isQrDisplayed = false;
 
@@ -75,7 +76,7 @@ function onResults(results) {
     }
 
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-        console.log(results.multiHandLandmarks);
+        // console.log(results.multiHandLandmarks);
         let landmarks = results.multiHandLandmarks[0];
         if (window.DEV) {
             drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 });
@@ -113,7 +114,7 @@ function onResults(results) {
                         canvasCountDownCtx.fillText(countDownNumber, overlayWidth, overlayHeight);
                         if (countDownNumber <= 0) {
                             clearInterval(countdown);
-                            countDownNumber = COUNTDOWN_OFFSET + 1;
+                            countDownNumber = window.COUNTDOWN_OFFSET + 1;
                             canvasCountDownCtx.clearRect(0, 0, canvasCountDownCtx.canvas.width, canvasCountDownCtx.canvas.height);
 
                             // var dataURL = canvasCtx.canvas.toDataURL("image/png");
@@ -228,3 +229,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     canvasCountDownCtx.canvas.width = window.innerWidth;
     canvasCountDownCtx.canvas.height = window.innerHeight;
 });
+
+canvasCountDownElement.onclick = function () {
+    PopUp.showPopup();
+};

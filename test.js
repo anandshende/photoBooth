@@ -360,7 +360,7 @@ function thumbFingerChecks(multiHandLandmarks, canvasCtx) {
 function allPointsChecks(multiHandLandmarks, canvasCtx) {
     let bool = multiHandLandmarks.find(landmark => landmark.y > 1 || landmark.y < 0 || landmark.x < 0 || landmark.x > 1);
     if (bool) {
-        console.log('One of the landmarks is out of the page');
+        // console.log('One of the landmarks is out of the page');
         return false;
     }
     return true;

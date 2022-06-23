@@ -21,7 +21,7 @@ body {
     position: absolute;
 }
 
-#qr-container {
+.qr-container {
     position: fixed;
     top: 0;
     bottom: 0;
