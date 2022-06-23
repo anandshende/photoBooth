@@ -36,9 +36,9 @@ videoElement.autoplay = true;
 videoElement.playsInline = true;
 document.body.appendChild(videoElement);
 
-const closeButton = document.getElementById('close');
 const qrContainer = document.getElementById('qr-container');
 const qrCode = document.getElementById('qrcode');
+const imagePreview = document.getElementById('image-preview');
 const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 
@@ -124,8 +124,8 @@ function onResults(results) {
                             const randomNum = Math.floor(Math.random() * Math.pow(10, 10));
                             const storageRef = ref(storage, randomNum + '.png');
                             // const message4 = 'data:text/plain;base64,5b6p5Y+344GX44G+44GX44Gf77yB44GK44KB44Gn44Go44GG77yB';
-                            const message4 = canvasCtx.canvas.toDataURL("image/png");
-                            uploadString(storageRef, message4, 'data_url').then((snapshot) => {
+                            const imageDataUrl = canvasCtx.canvas.toDataURL("image/png");
+                            uploadString(storageRef, imageDataUrl, 'data_url').then((snapshot) => {
                                 // console.log(snapshot);
                                 // console.log(storageRef);
                                 getDownloadURL(storageRef)
@@ -134,8 +134,8 @@ function onResults(results) {
 
                                         new QRCode(document.getElementById('qrcode'), {
                                             text: url,
-                                            width: 200,
-                                            height: 200,
+                                            // width: 200,
+                                            // height: 200,
                                             colorDark: '#000',
                                             colorLight: '#fff',
                                             correctLevel: QRCode.CorrectLevel.H
@@ -143,10 +143,17 @@ function onResults(results) {
 
                                         qrContainer.style.visibility = 'visible';
 
+                                        let imagePreviewEl = document.createElement('img');
+                                        imagePreviewEl.src = imageDataUrl;
+                                        imagePreviewEl.classList.add('image-preview-el');
+
+                                        imagePreview.appendChild(imagePreviewEl);
+
                                         setTimeout(() => {
                                             window.isQrDisplayed = false;
                                             qrContainer.style.visibility = 'hidden';
                                             qrcode.innerHTML = '';
+                                            imagePreview.innerHTML = '';
                                         }, QR_DISPLAY_TIMEOUT * 1000);
                                     })
                             });
@@ -210,8 +217,3 @@ window.addEventListener('DOMContentLoaded', (event) => {
     canvasCountDownCtx.canvas.width = window.innerWidth;
     canvasCountDownCtx.canvas.height = window.innerHeight;
 });
-
-closeButton.onclick = function () {
-    qrContainer.style.visibility = 'hidden';
-    qrcode.innerHTML = '';
-};
