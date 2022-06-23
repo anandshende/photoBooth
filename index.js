@@ -1,10 +1,20 @@
+const devFlag = localStorage.getItem('DEV');
+window.DEV = false;
+if (devFlag == 'true') {
+    window.DEV = true;
+}
+localStorage.setItem('DEV', window.DEV);
+
 import { calculations } from './test.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-app.js";
 import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-storage.js";
 
 
 
-const COUNTDOWN_OFFSET = 6;
+const CONTINUOUS_RECOGNITION_TIMEOUT = 2;
+const COUNTDOWN_OFFSET = 5;
+const QR_DISPLAY_TIMEOUT = 20;
+
 
 
 const firebaseConfig = {
@@ -35,8 +45,9 @@ const canvasCtx = canvasElement.getContext('2d');
 const canvasCountDownElement = document.getElementById('countdown');
 const canvasCountDownCtx = canvasCountDownElement.getContext('2d');
 
-let countDownNumber = COUNTDOWN_OFFSET;
+let countDownNumber = COUNTDOWN_OFFSET + 1;
 window.palmDetectedStartTime = null;
+window.isQrDisplayed = false;
 
 function drawImageScaled(img, ctx) {
     var canvas = ctx.canvas;
@@ -59,11 +70,17 @@ function onResults(results) {
 
     drawImageScaled(results.image, canvasCtx);
 
+    if (window.isQrDisplayed) {
+        return;
+    }
+
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         // console.log(results.multiHandLandmarks);
         let landmarks = results.multiHandLandmarks[0];
-        drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 });
-        drawLandmarks(canvasCtx, landmarks, { color: '#FF0000', lineWidth: 2 });
+        if (window.DEV) {
+            drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 });
+            drawLandmarks(canvasCtx, landmarks, { color: '#FF0000', lineWidth: 2 });
+        }
         let bool = calculations(landmarks, canvasCtx);
         if (bool) {
 
@@ -72,27 +89,36 @@ function onResults(results) {
             } else {
                 let currentTime = new Date();
                 let diffTime = Math.abs(currentTime - window.palmDetectedStartTime);
-                if (diffTime >= 2000) {
+                if (diffTime >= (CONTINUOUS_RECOGNITION_TIMEOUT * 1000)) {
                     window.palmDetectedStartTime = null;
 
                     let countdown = setInterval(() => {
                         countDownNumber--;
                         canvasCountDownCtx.clearRect(0, 0, canvasCountDownCtx.canvas.width, canvasCountDownCtx.canvas.height);
                         canvasCountDownCtx.fillStyle = 'white';
-                        canvasCountDownCtx.globalAlpha = 0.5;
+                        canvasCountDownCtx.globalAlpha = 0.8;
                         canvasCountDownCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
                         canvasCountDownCtx.fillStyle = 'black';
                         canvasCountDownCtx.font = '250px serif';
                         canvasCountDownCtx.lineWidth = 100;
-                        canvasCountDownCtx.fillText(countDownNumber, canvasCountDownCtx.canvas.width / 2, canvasCountDownCtx.canvas.height / 2);
+
+                        let measuredText = canvasCountDownCtx.measureText(countDownNumber);
+
+                        let overlayWidth = (canvasCountDownCtx.canvas.width / 2) - (measuredText.width / 2);
+                        let overlayHeight = (canvasCountDownCtx.canvas.height / 2) + (125 / 2);
+
+                        console.log(measuredText, overlayWidth, overlayHeight);
+
+                        canvasCountDownCtx.fillText(countDownNumber, overlayWidth, overlayHeight);
                         if (countDownNumber <= 0) {
                             clearInterval(countdown);
-                            countDownNumber = COUNTDOWN_OFFSET;
+                            countDownNumber = COUNTDOWN_OFFSET + 1;
                             canvasCountDownCtx.clearRect(0, 0, canvasCountDownCtx.canvas.width, canvasCountDownCtx.canvas.height);
 
                             // var dataURL = canvasCtx.canvas.toDataURL("image/png");
                             // var newTab = window.open('about:blank', 'image from canvas');
                             // newTab.document.write("<img src='" + dataURL + "' alt='from canvas'/>");
+                            window.isQrDisplayed = true;
 
                             const storage = getStorage(app);
                             const randomNum = Math.floor(Math.random() * Math.pow(10, 10));
@@ -106,7 +132,7 @@ function onResults(results) {
                                     .then((url) => {
                                         console.log(url);
 
-                                        const qrcode = new QRCode(document.getElementById('qrcode'), {
+                                        new QRCode(document.getElementById('qrcode'), {
                                             text: url,
                                             width: 200,
                                             height: 200,
@@ -116,6 +142,12 @@ function onResults(results) {
                                         });
 
                                         qrContainer.style.visibility = 'visible';
+
+                                        setTimeout(() => {
+                                            window.isQrDisplayed = false;
+                                            qrContainer.style.visibility = 'hidden';
+                                            qrcode.innerHTML = '';
+                                        }, QR_DISPLAY_TIMEOUT * 1000);
                                     })
                             });
 

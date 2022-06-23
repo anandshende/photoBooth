@@ -381,20 +381,23 @@ export function calculations(multiHandLandmarks, canvasCtx) {
                 if (littleFingerChecks(multiHandLandmarks, canvasCtx)) {
                     if (thumbFingerChecks(multiHandLandmarks, canvasCtx)) {
 
-                        let xMin = Math.min(wristpoint.x, thumbTip.x, indexFingerTip.x, middleFingerTip.x, ringFingerTip.x, littleFingerTip.x);
-                        let xMax = Math.max(wristpoint.x, thumbTip.x, indexFingerTip.x, middleFingerTip.x, ringFingerTip.x, littleFingerTip.x);
-                        let yMin = Math.min(wristpoint.y, thumbTip.y, indexFingerTip.y, middleFingerTip.y, ringFingerTip.y, littleFingerTip.y);
-                        let yMax = Math.max(wristpoint.y, thumbTip.y, indexFingerTip.y, middleFingerTip.y, ringFingerTip.y, littleFingerTip.y);
+                        if (window.DEV) {
 
-                        let x = xMin * 1366;
-                        let y = yMin * 768;
-                        let width = (xMax - xMin) * 1366;
-                        let height = (yMax - yMin) * 768;
+                            let xMin = Math.min(wristpoint.x, thumbTip.x, indexFingerTip.x, middleFingerTip.x, ringFingerTip.x, littleFingerTip.x);
+                            let xMax = Math.max(wristpoint.x, thumbTip.x, indexFingerTip.x, middleFingerTip.x, ringFingerTip.x, littleFingerTip.x);
+                            let yMin = Math.min(wristpoint.y, thumbTip.y, indexFingerTip.y, middleFingerTip.y, ringFingerTip.y, littleFingerTip.y);
+                            let yMax = Math.max(wristpoint.y, thumbTip.y, indexFingerTip.y, middleFingerTip.y, ringFingerTip.y, littleFingerTip.y);
 
-                        canvasCtx.fillStyle = 'red';
-                        canvasCtx.globalAlpha = 0.5;
+                            let x = xMin * 1366;
+                            let y = yMin * 768;
+                            let width = (xMax - xMin) * 1366;
+                            let height = (yMax - yMin) * 768;
 
-                        canvasCtx.fillRect(x, y, width, height);
+                            canvasCtx.fillStyle = 'red';
+                            canvasCtx.globalAlpha = 0.5;
+
+                            canvasCtx.fillRect(x, y, width, height);
+                        }
 
                         return true;
                     }
