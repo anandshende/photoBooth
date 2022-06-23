@@ -38,6 +38,10 @@ body {
     transform: translate(0, -50%);
 }
 
+#qrcode > img {
+    border: 40px solid white;
+}
+
 #image-preview {
     position: absolute;
     top: 50%;
