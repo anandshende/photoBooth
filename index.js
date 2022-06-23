@@ -75,7 +75,7 @@ function onResults(results) {
     }
 
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-        // console.log(results.multiHandLandmarks);
+        console.log(results.multiHandLandmarks);
         let landmarks = results.multiHandLandmarks[0];
         if (window.DEV) {
             drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 });
@@ -93,6 +93,7 @@ function onResults(results) {
                     window.palmDetectedStartTime = null;
 
                     let countdown = setInterval(() => {
+                        window.isQrDisplayed = true;
                         countDownNumber--;
                         canvasCountDownCtx.clearRect(0, 0, canvasCountDownCtx.canvas.width, canvasCountDownCtx.canvas.height);
                         canvasCountDownCtx.fillStyle = 'white';
@@ -107,7 +108,7 @@ function onResults(results) {
                         let overlayWidth = (canvasCountDownCtx.canvas.width / 2) - (measuredText.width / 2);
                         let overlayHeight = (canvasCountDownCtx.canvas.height / 2) + (125 / 2);
 
-                        console.log(measuredText, overlayWidth, overlayHeight);
+                        // console.log(measuredText, overlayWidth, overlayHeight);
 
                         canvasCountDownCtx.fillText(countDownNumber, overlayWidth, overlayHeight);
                         if (countDownNumber <= 0) {
@@ -118,7 +119,6 @@ function onResults(results) {
                             // var dataURL = canvasCtx.canvas.toDataURL("image/png");
                             // var newTab = window.open('about:blank', 'image from canvas');
                             // newTab.document.write("<img src='" + dataURL + "' alt='from canvas'/>");
-                            window.isQrDisplayed = true;
 
                             const storage = getStorage(app);
                             const randomNum = Math.floor(Math.random() * Math.pow(10, 10));
@@ -130,12 +130,19 @@ function onResults(results) {
                                 // console.log(storageRef);
                                 getDownloadURL(storageRef)
                                     .then((url) => {
-                                        console.log(url);
+                                        qrcode.innerHTML = '';
+                                        imagePreview.innerHTML = '';
+                                        // console.log(url);
+
+                                        let qrSize = {
+                                            height: window.innerWidth * 0.25,
+                                            width: window.innerWidth * 0.25
+                                        }
 
                                         new QRCode(document.getElementById('qrcode'), {
                                             text: url,
-                                            // width: 200,
-                                            // height: 200,
+                                            width: qrSize.width,
+                                            height: qrSize.height,
                                             colorDark: '#000',
                                             colorLight: '#fff',
                                             correctLevel: QRCode.CorrectLevel.H
@@ -165,6 +172,9 @@ function onResults(results) {
                     // alert('Start Timer to click a picture');
                 }
             }
+        } else {
+            window.palmDetectedStartTime = null;
+            window.isQrDisplayed = false;
         }
 
         // for (const landmarks of results.multiHandLandmarks) {
@@ -174,6 +184,7 @@ function onResults(results) {
         // }
     } else {
         window.palmDetectedStartTime = null;
+        window.isQrDisplayed = false;
     }
 
     // if (results.multiHandedness && results.multiHandedness.length > 0) {

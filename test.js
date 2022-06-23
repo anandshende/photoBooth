@@ -357,6 +357,15 @@ function thumbFingerChecks(multiHandLandmarks, canvasCtx) {
     return flag;
 }
 
+function allPointsChecks(multiHandLandmarks, canvasCtx) {
+    let bool = multiHandLandmarks.find(landmark => landmark.y > 1 || landmark.y < 0 || landmark.x < 0 || landmark.x > 1);
+    if (bool) {
+        console.log('One of the landmarks is out of the page');
+        return false;
+    }
+    return true;
+}
+
 
 export function calculations(multiHandLandmarks, canvasCtx) {
     let wristpoint = { x: multiHandLandmarks[0].x, y: multiHandLandmarks[0].y };
@@ -375,31 +384,33 @@ export function calculations(multiHandLandmarks, canvasCtx) {
     // console.log('Middle finger calc :: ', palmDist, fingerDist, totalMiddleDist);
 
 
-    if (middleFingerChecks(multiHandLandmarks, canvasCtx)) {
-        if (indexFingerChecks(multiHandLandmarks, canvasCtx)) {
-            if (ringFingerChecks(multiHandLandmarks, canvasCtx)) {
-                if (littleFingerChecks(multiHandLandmarks, canvasCtx)) {
-                    if (thumbFingerChecks(multiHandLandmarks, canvasCtx)) {
+    if (allPointsChecks(multiHandLandmarks, canvasCtx)) {
+        if (middleFingerChecks(multiHandLandmarks, canvasCtx)) {
+            if (indexFingerChecks(multiHandLandmarks, canvasCtx)) {
+                if (ringFingerChecks(multiHandLandmarks, canvasCtx)) {
+                    if (littleFingerChecks(multiHandLandmarks, canvasCtx)) {
+                        if (thumbFingerChecks(multiHandLandmarks, canvasCtx)) {
 
-                        if (window.DEV) {
+                            if (window.DEV) {
 
-                            let xMin = Math.min(wristpoint.x, thumbTip.x, indexFingerTip.x, middleFingerTip.x, ringFingerTip.x, littleFingerTip.x);
-                            let xMax = Math.max(wristpoint.x, thumbTip.x, indexFingerTip.x, middleFingerTip.x, ringFingerTip.x, littleFingerTip.x);
-                            let yMin = Math.min(wristpoint.y, thumbTip.y, indexFingerTip.y, middleFingerTip.y, ringFingerTip.y, littleFingerTip.y);
-                            let yMax = Math.max(wristpoint.y, thumbTip.y, indexFingerTip.y, middleFingerTip.y, ringFingerTip.y, littleFingerTip.y);
+                                let xMin = Math.min(wristpoint.x, thumbTip.x, indexFingerTip.x, middleFingerTip.x, ringFingerTip.x, littleFingerTip.x);
+                                let xMax = Math.max(wristpoint.x, thumbTip.x, indexFingerTip.x, middleFingerTip.x, ringFingerTip.x, littleFingerTip.x);
+                                let yMin = Math.min(wristpoint.y, thumbTip.y, indexFingerTip.y, middleFingerTip.y, ringFingerTip.y, littleFingerTip.y);
+                                let yMax = Math.max(wristpoint.y, thumbTip.y, indexFingerTip.y, middleFingerTip.y, ringFingerTip.y, littleFingerTip.y);
 
-                            let x = xMin * 1366;
-                            let y = yMin * 768;
-                            let width = (xMax - xMin) * 1366;
-                            let height = (yMax - yMin) * 768;
+                                let x = xMin * 1366;
+                                let y = yMin * 768;
+                                let width = (xMax - xMin) * 1366;
+                                let height = (yMax - yMin) * 768;
 
-                            canvasCtx.fillStyle = 'red';
-                            canvasCtx.globalAlpha = 0.5;
+                                canvasCtx.fillStyle = 'red';
+                                canvasCtx.globalAlpha = 0.5;
 
-                            canvasCtx.fillRect(x, y, width, height);
+                                canvasCtx.fillRect(x, y, width, height);
+                            }
+
+                            return true;
                         }
-
-                        return true;
                     }
                 }
             }
