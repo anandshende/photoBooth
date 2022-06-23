@@ -187,13 +187,13 @@ function onResults(results) {
         window.isQrDisplayed = false;
     }
 
-    // if (results.multiHandedness && results.multiHandedness.length > 0) {
-    //     let multiHandedness = results.multiHandedness[0];
-    //     // console.log(multiHandedness.label);
-    //     canvasCtx.font = '50px serif';
-    //     var width = canvasCtx.measureText(multiHandedness.label);
-    //     canvasCtx.fillText(multiHandedness.label, 100, 100);
-    // }
+    if (window.DEV && results.multiHandedness && results.multiHandedness.length > 0) {
+        let multiHandedness = results.multiHandedness[0];
+        // console.log(multiHandedness.label);
+        canvasCtx.font = '50px serif';
+        var width = canvasCtx.measureText(multiHandedness.label);
+        canvasCtx.fillText(multiHandedness.label, 100, 100);
+    }
 
     canvasCtx.restore();
 }
